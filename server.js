@@ -34,4 +34,8 @@ app.post('/fridge', (req, res) => {
       })
   })
 })
-app.listen(3000) // sets app to listen to port 3000 so we can use postman to GET the json information
+
+app.listen(process.env.PORT || 3000)
+// app.listen(3000) can't use this when sever is deployed to heroku. Must use porocess.env.PORT
+// app.listen(3000) // sets app to listen to port 3000 so we can use postman to GET the json information
+// app.listen(process.env.PORT) allows heroku to decide what port our app runs on.
