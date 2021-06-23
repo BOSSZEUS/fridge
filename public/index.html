@@ -1,16 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <h1>Fridge Application</h1>
+    <hr>
+    <h2>Creat A New Food</h2>
+    <form>
+      <p>
+        <label for="name">name</label>
+        <input type="text" name="name" id="name">
+      </p>
+      <p>
+        <label for="calories">calories</label>
+        <input type="text" name="calories" id="calories">
+      </p>
+      <p>
+        <label for="fat">fat</label>
+        <input type="text" name="fat" id="fat">
+      </p>
+      <p>
+        <label for="protein">protein</label>
+        <input type="text" name="protein" id="protein">
+      </p>
+      <p>
+          <button id="addFood">Add Food</button>
+      </p>
+    </form>
+    <hr>
+    <h1>Find A Food</h1>
+    <form">
+      <p>
+          <label for="search">search</label>
+          <input type="text" name="search" id="search">
+      </p>
+      <p>
+          <button id="searchFood" >Search Food</button>
+      </p>
+    </form>
+    <hr>
+    <h1>Whats in the Fridge for today</h1>
+    <div id="display"></div>
+    
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        const renderFridge = _ => {
+        const renderFridge = () => {
             axios.get('/fridge')
                 .then(({data: fridge}) => {
                     document.getElementById('display').innerHTML = ''
@@ -18,15 +55,57 @@
                         let foodElem = document.createElement('div')
                         foodElem.innerHTML =
                             `<h3>${food.name}</h3>
-                            <p>Calories: ${food.calories}</p>
+                            <p>calories: ${food.calories}</p>
                             <p>Fat: ${food.fat}</p>
-                            <p>Protein: ${food.protein}</p>`
+                            <p>protein: ${food.protein}</p>`
+                            document.getElementById('display').append(foodElem)
                     })
                 })
+                .catch( e => console.log(e))
         }
 
+        document.getElementById('addFood').addEventListener('click', event =>{
+            event.preventDefault()
+            axios.post('/fridge',{
+                name: document.getElementById('name').value,
+                calories: document.getElementById('calories').value,
+                fat: document.getElementById('fat').value,
+                protein: document.getElementById('protein').value
+            })
+            .then(()=> {
+                document.getElementById('name').value = ''
+                document.getElementById('calories').value = ''
+                document.getElementById('fat').value = ''
+                document.getElementById('protein').value = ''
+                renderFridge()
+            })
+        })
+        document.getElementById('searchFood').addEventListener(
+          'click', event => {
+            event.preventDefault()
+            if (document.getElementById('search').value.length <= 0 ) 
+            {
+                renderFridge()
+            }else {
+
+            
+             axios.get(`/fridge/${document.getElementById('search').value}`)
+            .then(({data : food }) => {
+              document.getElementById('display').value = ''
+              document.getElementById('display').innerHTML = `
+              <div>
+              <h3>${food.name}</h3>
+              <p>calories: ${food.calories}</p>
+              <p>fat: ${food.fat}</p>
+              <p>protein: ${food.protein}</p>
+              </div>`
+
+            })
+          }
+          })
         renderFridge()
     </script>
+
 </body>
 
 </html>
